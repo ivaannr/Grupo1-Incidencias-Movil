@@ -3,7 +3,6 @@ package com.example.gestiondeincidencias.components.homeScreen
 import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AdminPanelSettings
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -40,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -133,7 +132,7 @@ class HomeScreen() {
 
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(16.dp),
                         color = Color.White.copy(alpha = 0.15f)
                     ) {
                         Row(
@@ -182,7 +181,8 @@ class HomeScreen() {
                         icon = Icons.Default.Add,
                         color = primaryBlue,
                         modifier = Modifier.weight(1f),
-                        onClick = { navController.navigate("add") }
+                        onClick = { navController.navigate("add") },
+                        fontSize = 15
                     )
                     ActionCard(
                         title = "Ver Todas",
@@ -194,15 +194,39 @@ class HomeScreen() {
                     )
                 }
 
+                Spacer(modifier = Modifier.height(16.dp))
+
                 if (usuario?.rol == Rol.ADMINISTRADOR) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ActionCard(
-                        title = "Panel Admin",
-                        subtitle = "Gestionar sistema",
-                        icon = Icons.Default.AdminPanelSettings,
-                        color = Color(0xFFE91E63),
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { navController.navigate("admin") }
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        ActionCard(
+                            title = "Panel Admin",
+                            subtitle = "Gestionar sistema",
+                            icon = Icons.Default.AdminPanelSettings,
+                            color = Color(0xFFE91E63),
+                            modifier = Modifier.weight(1f),
+                            onClick = { navController.navigate("admin") }
+                        )
+                        ActionCard(
+                            title = "Calendario",
+                            subtitle = "Ver por fechas",
+                            icon = Icons.Default.CalendarMonth,
+                            color = Color(0xFF673AB7),
+                            modifier = Modifier.weight(1f),
+                            onClick = { navController.navigate("calendar") },
+                            fontSize = 15
+                        )
+                    }
+                } else {
+                    ActionCard(
+                        title = "Calendario de Incidencias",
+                        subtitle = "Visualización temporal de reportes",
+                        icon = Icons.Default.CalendarMonth,
+                        color = Color(0xFF673AB7),
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { navController.navigate("calendar") }
                     )
                 }
 
@@ -218,7 +242,7 @@ class HomeScreen() {
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
@@ -253,7 +277,7 @@ class HomeScreen() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(16.dp),
                     border = BorderStroke(
                         1.dp,
                         Color.Red.copy(alpha = 0.5f)
@@ -270,8 +294,4 @@ class HomeScreen() {
             }
         }
     }
-
-
-
-
 }

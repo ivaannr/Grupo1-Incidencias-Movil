@@ -119,7 +119,7 @@ class EditIncidenciaScreen(
                 )
 
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Estado.values().forEach { est ->
+                    Estado.entries.forEach { est ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically

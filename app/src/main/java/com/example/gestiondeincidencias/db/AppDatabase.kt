@@ -11,7 +11,7 @@ import com.example.gestiondeincidencias.db.model.Incidencia
 import com.example.gestiondeincidencias.db.model.Usuario
 
 @SuppressLint("RestrictedApi")
-@Database(entities = [Incidencia::class, Usuario::class], version = 3)
+@Database(entities = [Incidencia::class, Usuario::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun incidenciaDao(): IncidenciaDao
     abstract fun usuarioDao(): UsuarioDao

@@ -1,5 +1,6 @@
 package com.example.gestiondeincidencias.components.editUsuarioScreen
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,10 +37,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.gestiondeincidencias.components.general.AlertDialog
 import com.example.gestiondeincidencias.db.model.Rol
 import com.example.gestiondeincidencias.db.viewmodel.UsuarioViewModel
 
@@ -62,9 +65,45 @@ class EditUsuarioScreen(
             return
         }
 
+        val context = LocalContext.current
+
         var nombre by remember { mutableStateOf(usuario.nombre) }
         var email by remember { mutableStateOf(usuario.email) }
         var rol by remember { mutableStateOf(usuario.rol) }
+        var dialogOpen by remember { mutableStateOf(false) }
+
+        if (dialogOpen) {
+            AlertDialog(
+                onDismissRequest = {
+                    Toast.makeText(
+                        context,
+                        "Cambios no guardados",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    dialogOpen = false;
+                },
+                onConfirmation = {
+                    usuarioViewModel.update(
+                        usuario.copy(
+                            nombre = nombre,
+                            email = email,
+                            rol = rol
+                        )
+                    )
+                    Toast.makeText(
+                        context,
+                        "Usuario actualizado",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    navController.popBackStack()
+                    dialogOpen = false;
+                },
+                dialogTitle = "Alerta",
+                dialogText = "¿Quieres guardar los cambios?",
+                icon = Icons.Default.Person
+            )
+        }
+
 
         Scaffold(
             topBar = {
@@ -120,7 +159,7 @@ class EditUsuarioScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Rol.values().forEach { r ->
+                    Rol.entries.forEach { r ->
                         FilterChip(
                             selected = rol == r,
                             onClick = { rol = r },
@@ -134,16 +173,11 @@ class EditUsuarioScreen(
 
                 Button(
                     onClick = {
-                        usuarioViewModel.update(
-                            usuario.copy(
-                                nombre = nombre,
-                                email = email,
-                                rol = rol
-                            )
-                        )
-                        navController.popBackStack()
+                        dialogOpen = true;
                     },
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))
                 ) {
@@ -155,5 +189,7 @@ class EditUsuarioScreen(
                 }
             }
         }
+
+
     }
 }

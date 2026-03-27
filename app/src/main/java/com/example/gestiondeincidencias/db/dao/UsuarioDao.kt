@@ -15,11 +15,14 @@ interface UsuarioDao {
     @Query("SELECT * FROM Usuarios WHERE id = :id")
     suspend fun getById(id: Int): Usuario?
 
-    @Query("SELECT * FROM Usuarios WHERE email = :email AND contrasena = :contrasena LIMIT 1")
-    suspend fun getByCredentials(email: String, contrasena: String): Usuario?
+    @Query("SELECT * FROM Usuarios WHERE email = :identifier AND contrasena = :contrasena LIMIT 1")
+    suspend fun getByCredentials(identifier: String, contrasena: String): Usuario?
 
-    @Query("SELECT * FROM Usuarios WHERE email = :email LIMIT 1")
-    suspend fun getByEmail(email: String): Usuario?
+    @Query("SELECT * FROM Usuarios WHERE email = :email AND contrasena = :contrasena LIMIT 1")
+    suspend fun getByEmail(email: String, contrasena: String): Usuario?
+
+    @Query("SELECT * FROM Usuarios WHERE nombre = :nombre AND contrasena = :contrasena LIMIT 1")
+    suspend fun getUserByName(nombre: String, contrasena: String): Usuario?
 
     @Insert
     suspend fun insert(usuario: Usuario): Long

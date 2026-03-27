@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -24,16 +23,9 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,9 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gestiondeincidencias.db.model.Categoria
@@ -61,6 +51,119 @@ import java.util.Locale
 
 class AddIncidenciaScreen {
 
+    private val problemasPorCategoria = mapOf(
+        Categoria.HARDWARE.displayName to listOf(
+            "Ordenador no enciende" to NivelUrgencia.ALTA,
+            "Pantalla rota/dañada" to NivelUrgencia.ALTA,
+            "Teclado no funciona" to NivelUrgencia.MEDIA,
+            "Ratón no funciona" to NivelUrgencia.BAJA,
+            "Problema con impresora" to NivelUrgencia.MEDIA,
+            "Componente ruidoso" to NivelUrgencia.BAJA,
+            "Puerto USB dañado" to NivelUrgencia.BAJA,
+            "Disco duro ruidoso/clic" to NivelUrgencia.ALTA,
+            "Portátil no carga" to NivelUrgencia.ALTA,
+            "Webcam no funciona" to NivelUrgencia.BAJA,
+            "Altavoces no suenan" to NivelUrgencia.BAJA,
+            "Monitor parpadea" to NivelUrgencia.MEDIA,
+            "Sobrecalentamiento/Apagones" to NivelUrgencia.ALTA,
+            "Lector de tarjetas falla" to NivelUrgencia.BAJA,
+            "Escáner no detectado" to NivelUrgencia.MEDIA,
+            "Cable alimentación dañado" to NivelUrgencia.ALTA,
+            "Batería hinchada" to NivelUrgencia.ALTA,
+            "Rayas en pantalla (GPU)" to NivelUrgencia.ALTA,
+            "Lentitud extrema (RAM)" to NivelUrgencia.MEDIA,
+            "Mal contacto conector video" to NivelUrgencia.MEDIA
+        ),
+        Categoria.SOFTWARE.displayName to listOf(
+            "Aplicación crítica no abre" to NivelUrgencia.ALTA,
+            "Error de sistema (BSOD)" to NivelUrgencia.ALTA,
+            "Problemas con el correo" to NivelUrgencia.MEDIA,
+            "Instalación de programa" to NivelUrgencia.BAJA,
+            "Actualización pendiente" to NivelUrgencia.BAJA,
+            "Virus o Malware detectado" to NivelUrgencia.ALTA,
+            "Licencia expirada" to NivelUrgencia.MEDIA,
+            "Software se cierra solo" to NivelUrgencia.MEDIA,
+            "Archivos corruptos" to NivelUrgencia.ALTA,
+            "No puede guardar documentos" to NivelUrgencia.ALTA,
+            "PDF no se abre" to NivelUrgencia.BAJA,
+            "Navegador bloqueado" to NivelUrgencia.MEDIA,
+            "Error al imprimir desde App" to NivelUrgencia.MEDIA,
+            "Sincronización nube falla" to NivelUrgencia.MEDIA,
+            "Fuentes faltantes" to NivelUrgencia.BAJA,
+            "App de gestión muy lenta" to NivelUrgencia.MEDIA,
+            "Error de Java/Runtime" to NivelUrgencia.MEDIA,
+            "Idioma incorrecto" to NivelUrgencia.BAJA,
+            "No puede adjuntar archivos" to NivelUrgencia.MEDIA,
+            "Recuperar archivo borrado" to NivelUrgencia.ALTA
+        ),
+        Categoria.CONECTIVIDAD.displayName to listOf(
+            "Sin conexión a Internet" to NivelUrgencia.ALTA,
+            "WiFi no funciona en aula" to NivelUrgencia.ALTA,
+            "Conexión lenta/intermitente" to NivelUrgencia.MEDIA,
+            "Problema con cable de red" to NivelUrgencia.BAJA,
+            "No accede a carpetas red" to NivelUrgencia.ALTA,
+            "VPN no conecta" to NivelUrgencia.ALTA,
+            "Error de DNS" to NivelUrgencia.MEDIA,
+            "Conflicto de IP" to NivelUrgencia.MEDIA,
+            "Firewall bloquea App" to NivelUrgencia.MEDIA,
+            "Bluetooth no empareja" to NivelUrgencia.BAJA,
+            "Router pitando/caliente" to NivelUrgencia.MEDIA,
+            "Web específica bloqueada" to NivelUrgencia.BAJA,
+            "Latencia en videollamada" to NivelUrgencia.MEDIA,
+            "SSID no aparece" to NivelUrgencia.MEDIA,
+            "Punto de acceso caído" to NivelUrgencia.ALTA,
+            "Toma de red pared rota" to NivelUrgencia.MEDIA,
+            "No puede enviar correos" to NivelUrgencia.ALTA,
+            "Puerto Switch bloqueado" to NivelUrgencia.MEDIA,
+            "WiFi pide pass constante" to NivelUrgencia.MEDIA,
+            "Proxy mal configurado" to NivelUrgencia.ALTA
+        ),
+        Categoria.USUARIOS.displayName to listOf(
+            "Cuenta bloqueada" to NivelUrgencia.ALTA,
+            "Olvido de contraseña" to NivelUrgencia.MEDIA,
+            "Alta de nuevo usuario" to NivelUrgencia.BAJA,
+            "Modificación de permisos" to NivelUrgencia.BAJA,
+            "Cambio de nombre/datos" to NivelUrgencia.BAJA,
+            "Error inicio sesión dominio" to NivelUrgencia.ALTA,
+            "Perfil temporal cargado" to NivelUrgencia.ALTA,
+            "Firma correo mal configurada" to NivelUrgencia.BAJA,
+            "Buzón de correo lleno" to NivelUrgencia.MEDIA,
+            "Acceso a carpeta protegida" to NivelUrgencia.BAJA,
+            "Baja de usuario" to NivelUrgencia.BAJA,
+            "Error de Doble Factor (MFA)" to NivelUrgencia.ALTA,
+            "Preguntas seguridad reset" to NivelUrgencia.BAJA,
+            "Añadir a grupo de trabajo" to NivelUrgencia.BAJA,
+            "Problema certificado digital" to NivelUrgencia.ALTA,
+            "Sesión se cierra sola" to NivelUrgencia.MEDIA,
+            "No puede cambiar pass" to NivelUrgencia.MEDIA,
+            "Usuario no en libreta direc" to NivelUrgencia.BAJA,
+            "Solicitar formación" to NivelUrgencia.BAJA,
+            "Posible Phishing/Estafa" to NivelUrgencia.ALTA
+        ),
+        Categoria.INFRAESTRUCTURA.displayName to listOf(
+            "Enchufe peligroso/suelto" to NivelUrgencia.ALTA,
+            "Fallo eléctrico en aula" to NivelUrgencia.ALTA,
+            "Proyector no funciona" to NivelUrgencia.MEDIA,
+            "Bombilla fundida" to NivelUrgencia.BAJA,
+            "Persiana atascada" to NivelUrgencia.BAJA,
+            "Gotera en el techo" to NivelUrgencia.ALTA,
+            "AC no enfría" to NivelUrgencia.MEDIA,
+            "Calefacción no funciona" to NivelUrgencia.MEDIA,
+            "Puerta no cierra bien" to NivelUrgencia.MEDIA,
+            "Pizarra digital descalibrada" to NivelUrgencia.MEDIA,
+            "Cables por el suelo" to NivelUrgencia.ALTA,
+            "Pantalla proyec no baja" to NivelUrgencia.BAJA,
+            "Ruido excesivo en rack" to NivelUrgencia.MEDIA,
+            "Mal olor en el aula" to NivelUrgencia.MEDIA,
+            "Mobiliario roto (Silla/Mesa)" to NivelUrgencia.BAJA,
+            "Humedad en la pared" to NivelUrgencia.BAJA,
+            "Ventana no cierra" to NivelUrgencia.MEDIA,
+            "Falta tiza/rotuladores" to NivelUrgencia.BAJA,
+            "Luz emergencia encendida" to NivelUrgencia.MEDIA,
+            "Grieta en pared" to NivelUrgencia.ALTA
+        )
+    )
+
     @Composable
     fun Render(
         onBackClick: () -> Unit = { },
@@ -71,7 +174,8 @@ class AddIncidenciaScreen {
         var descripcion by remember { mutableStateOf("") }
         var ubicacion by remember { mutableStateOf("") }
         var categoriaSeleccionada by remember { mutableStateOf("") }
-        var nivelUrgenciaSeleccionado by remember { mutableStateOf("") }
+        var tipoDeProblema by remember { mutableStateOf("") }
+        var nivelDeUrgencia by remember { mutableStateOf("") }
         var estadoSeleccionado by remember { mutableStateOf(Estado.ABIERTA.displayName) }
 
         val fechaActual = remember {
@@ -79,9 +183,9 @@ class AddIncidenciaScreen {
         }
 
         var errorTitulo by remember { mutableStateOf(false) }
-        var errorDescripcion by remember { mutableStateOf(false) }
+        var errorDescription by remember { mutableStateOf(false) }
         var errorCategoria by remember { mutableStateOf(false) }
-        var errorUrgencia by remember { mutableStateOf(false) }
+        var errorTipoProblema by remember { mutableStateOf(false) }
         var errorUbicacion by remember { mutableStateOf(false) }
 
         val primaryBlue = Color(0xFF2196F3)
@@ -163,41 +267,45 @@ class AddIncidenciaScreen {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        StyledTextField(
-                            value = descripcion,
-                            onValueChange = { descripcion = it; errorDescripcion = false },
-                            label = "Descripción detallada *",
-                            icon = Icons.Default.Info,
-                            isError = errorDescripcion,
-                            errorMessage = "La descripción es obligatoria",
-                            singleLine = false,
-                            modifier = Modifier.height(120.dp),
-                            primaryColor = primaryBlue
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
                         StyledDropdownField(
                             label = "Categoría *",
                             selectedValue = categoriaSeleccionada,
                             options = Categoria.entries.map { it.displayName },
-                            onValueChange = { categoriaSeleccionada = it; errorCategoria = false },
+                            onValueChange = { 
+                                categoriaSeleccionada = it
+                                errorCategoria = false
+                                tipoDeProblema = ""
+                                nivelDeUrgencia = ""
+                            },
                             isError = errorCategoria,
                             primaryColor = primaryBlue
                         )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        if (categoriaSeleccionada.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            val opciones = problemasPorCategoria[categoriaSeleccionada] ?: emptyList()
+                            StyledDropdownField(
+                                label = "Tipo de problema *",
+                                selectedValue = tipoDeProblema,
+                                options = opciones.map { it.first },
+                                onValueChange = { selected ->
+                                    tipoDeProblema = selected
+                                    errorTipoProblema = false
+                                    val urgencia = opciones.find { it.first == selected }?.second
+                                    nivelDeUrgencia = urgencia?.displayName ?: ""
+                                },
+                                isError = errorTipoProblema,
+                                primaryColor = primaryBlue
+                            )
+                        }
 
-                        StyledDropdownField(
-                            label = "Nivel de Urgencia *",
-                            selectedValue = nivelUrgenciaSeleccionado,
-                            options = NivelUrgencia.entries.map { it.displayName },
-                            onValueChange = {
-                                nivelUrgenciaSeleccionado = it; errorUrgencia = false
-                            },
-                            isError = errorUrgencia,
-                            primaryColor = primaryBlue
-                        )
+                        if (nivelDeUrgencia.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            ReadOnlyField(
+                                "Nivel de Urgencia",
+                                value = nivelDeUrgencia
+                            )
+                        }
 
                         Spacer(modifier = Modifier.height(16.dp))
 
@@ -211,27 +319,41 @@ class AddIncidenciaScreen {
                             primaryColor = primaryBlue
                         )
 
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        StyledTextField(
+                            value = descripcion,
+                            onValueChange = { descripcion = it; errorDescription = false },
+                            label = "Descripción detallada *",
+                            icon = Icons.Default.Info,
+                            isError = errorDescription,
+                            errorMessage = "La descripción es obligatoria",
+                            singleLine = false,
+                            modifier = Modifier.height(120.dp),
+                            primaryColor = primaryBlue
+                        )
+
                         Spacer(modifier = Modifier.height(32.dp))
 
                         Button(
                             onClick = {
                                 errorTitulo = titulo.isBlank()
-                                errorDescripcion = descripcion.isBlank()
+                                errorDescription = descripcion.isBlank()
                                 errorCategoria = categoriaSeleccionada.isBlank()
-                                errorUrgencia = nivelUrgenciaSeleccionado.isBlank()
+                                errorTipoProblema = categoriaSeleccionada.isNotEmpty() && tipoDeProblema.isBlank()
                                 errorUbicacion = ubicacion.isBlank()
 
-                                if (!errorTitulo && !errorDescripcion &&
-                                    !errorCategoria && !errorUrgencia && !errorUbicacion
+                                if (!errorTitulo && !errorDescription &&
+                                    !errorCategoria && !errorTipoProblema && !errorUbicacion
                                 ) {
                                     val incidencia = Incidencia(
                                         id = 0,
                                         titulo = titulo,
-                                        descripcion = descripcion,
+                                        descripcion = "$tipoDeProblema: $descripcion",
                                         usuarioId = usuario?.id.toString(),
                                         categoria = categoriaSeleccionada,
                                         fechaRegistro = fechaActual,
-                                        nivelUrgencia = nivelUrgenciaSeleccionado,
+                                        nivelUrgencia = nivelDeUrgencia,
                                         estado = estadoSeleccionado,
                                         ubicacion = ubicacion
                                     )
@@ -275,10 +397,4 @@ class AddIncidenciaScreen {
             }
         }
     }
-
-
-
-
-
-
 }

@@ -1,12 +1,13 @@
 package com.example.gestiondeincidencias
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
@@ -32,8 +33,11 @@ import com.example.gestiondeincidencias.components.incidenciaDetalleScreen.Incid
 import com.example.gestiondeincidencias.components.loginScreen.LoginScreen
 import com.example.gestiondeincidencias.components.registerScreen.RegisterScreen
 import com.example.gestiondeincidencias.components.welcomeScreen.WelcomeScreen
+import androidx.core.content.edit
+import com.example.gestiondeincidencias.components.calendarScreen.CalendarScreen
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -44,13 +48,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("ViewModelConstructorInComposable")
     @Composable
     fun App() {
         val context = LocalContext.current
         val navController = rememberNavController()
         val database = remember { AppDatabase.getInstance(context) }
-        val userViewModel = remember { UsuarioViewModel(database.usuarioDao()) }
+        val usuarioViewModel = remember { UsuarioViewModel(database.usuarioDao()) }
         val incidenciasViewModel = remember { IncidenciaViewModel(database.incidenciaDao()) }
         val scope = rememberCoroutineScope()
 
@@ -60,15 +65,19 @@ class MainActivity : ComponentActivity() {
                 WelcomeScreen(navController)
             }
 
+            composable("calendar") {
+                CalendarScreen(incidenciasViewModel.incidencias.collectAsState().value, navController).Render()
+            }
+
             composable("login") {
                 LoginScreen(navController).Render(
-                    onLoginClick = { email, password, remember ->
+                    onLoginClick = { identifier, password, remember ->
                          scope.launch {
                             try {
-                                val user = userViewModel.login(email, password)
+                                val user = usuarioViewModel.login(identifier, password)
                                 if (remember) {
-                                    val prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
-                                    prefs.edit().putInt("rememberId", user.id).apply()
+                                    val prefs = context.getSharedPreferences("prefs", MODE_PRIVATE)
+                                    prefs.edit { putInt("rememberId", user.id) }
                                 }
                                 Toast.makeText(context, "Bienvenido", Toast.LENGTH_SHORT).show()
                                 navController.navigate("home") {
@@ -90,7 +99,7 @@ class MainActivity : ComponentActivity() {
                     onRegisterClick = { usuario ->
                         scope.launch {
                             try {
-                                userViewModel.registrar(usuario)
+                                usuarioViewModel.registrar(usuario)
                                 Toast.makeText(context, "Registro completado", Toast.LENGTH_SHORT).show()
                                 navController.navigate("login") {
                                     popUpTo("register") { inclusive = true }
@@ -106,11 +115,11 @@ class MainActivity : ComponentActivity() {
             composable("home") {
                 HomeScreen().Render(
                     navController = navController,
-                    usuario = userViewModel.usuarioLoggeado.collectAsState().value,
-                    onLogout = { userViewModel.logout() },
+                    usuario = usuarioViewModel.usuarioLoggeado.collectAsState().value,
+                    onLogout = { usuarioViewModel.logout() },
                     incidencias = incidenciasViewModel.incidencias.collectAsState().value,
                     context = context,
-                    usersViewModel = userViewModel
+                    usersViewModel = usuarioViewModel
                 )
             }
 
@@ -134,12 +143,12 @@ class MainActivity : ComponentActivity() {
                         incidenciasViewModel.insert(it)
                         navController.popBackStack()
                     },
-                    userViewModel.usuarioLoggeado.collectAsState().value
+                    usuarioViewModel.usuarioLoggeado.collectAsState().value
                 )
             }
 
             composable("admin") {
-                AdminScreen(navController, userViewModel, incidenciasViewModel).Render()
+                AdminScreen(navController, usuarioViewModel, incidenciasViewModel).Render()
             }
 
             composable(
@@ -147,7 +156,7 @@ class MainActivity : ComponentActivity() {
                 arguments = listOf(navArgument("incidenciaId") { type = NavType.IntType })
             ) { backStackEntry ->
                 val id = backStackEntry.arguments?.getInt("incidenciaId") ?: return@composable
-                IncidenciaDetalleScreen(navController, incidenciasViewModel, id).Render()
+                IncidenciaDetalleScreen(id, incidenciasViewModel, usuarioViewModel, navController)
             }
 
             composable(
@@ -155,7 +164,7 @@ class MainActivity : ComponentActivity() {
                 arguments = listOf(navArgument("usuarioId") { type = NavType.IntType })
             ) { backStackEntry ->
                 val usuarioId = backStackEntry.arguments?.getInt("usuarioId") ?: return@composable
-                EditUsuarioScreen(navController, userViewModel, usuarioId).Render()
+                EditUsuarioScreen(navController, usuarioViewModel, usuarioId).Render()
             }
 
             composable(

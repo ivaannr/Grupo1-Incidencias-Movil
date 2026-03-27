@@ -37,3 +37,4 @@ enum class Estado(val displayName: String) {
     RESUELTA("Resuelta"),
     CERRADA("Cerrada")
 }
+

@@ -29,7 +29,8 @@ fun ActionCard(
     icon: ImageVector,
     color: Color,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    fontSize: Int = 16
 ) {
     Card(
         modifier = modifier
@@ -62,7 +63,7 @@ fun ActionCard(
                 Text(
                     text = title,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    fontSize = fontSize.sp,
                     color = Color.Black
                 )
                 Text(text = subtitle, fontSize = 13.sp, color = Color.Gray)

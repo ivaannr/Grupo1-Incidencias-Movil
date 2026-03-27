@@ -98,7 +98,7 @@ fun IncidenciaListItem(incidencia: Incidencia, onClick: () -> Unit) {
                     )
                     InfoLabel(
                         icon = Icons.Default.Schedule,
-                        text = incidencia.fechaRegistro.split(" ")[0] // Solo fecha
+                        text = incidencia.fechaRegistro.split(" ")[0]
                     )
                 }
             }

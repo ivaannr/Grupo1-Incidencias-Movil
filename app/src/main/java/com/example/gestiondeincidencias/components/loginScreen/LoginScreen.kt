@@ -64,11 +64,11 @@ class LoginScreen(val navController: NavController) {
     @SuppressLint("CommitPrefEdits")
     @Composable
     fun Render(
-        onLoginClick: (email: String, password: String, remember: Boolean) -> Unit = { _, _, _ -> },
+        onLoginClick: (userIdentifier: String, password: String, remember: Boolean) -> Unit = { _, _, _ -> },
         onForgotPasswordClick: () -> Unit = { },
         onSignUpClick: () -> Unit = { },
     ) {
-        var mail by remember { mutableStateOf("") }
+        var identifier by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         var rememberMe by remember { mutableStateOf(false) }
         var passwordVisible by remember { mutableStateOf(false) }
@@ -174,12 +174,12 @@ class LoginScreen(val navController: NavController) {
                         )
 
                         OutlinedTextField(
-                            value = mail,
+                            value = identifier,
                             onValueChange = {
-                                mail = it
+                                identifier = it
                                 mailError = false
                             },
-                            label = { Text("Correo electrónico") },
+                            label = { Text("Correo / Usuario") },
                             modifier = Modifier.fillMaxWidth(),
                             shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -199,7 +199,7 @@ class LoginScreen(val navController: NavController) {
                         )
                         if (mailError) {
                             Text(
-                                text = "Ingresa un correo válido",
+                                text = "Ingresa un correo o usuario válido",
                                 color = MaterialTheme.colorScheme.error,
                                 fontSize = 12.sp,
                                 modifier = Modifier.align(Alignment.Start)
@@ -289,10 +289,14 @@ class LoginScreen(val navController: NavController) {
 
                         Button(
                             onClick = {
-                                mailError = !isValidEmail(mail)
+
+                                if (!identifier.contains("@")) {
+                                    mailError = !isValidEmail(identifier)
+                                }
+
                                 passwordError = password.length < 6
                                 if (!mailError && !passwordError) {
-                                    onLoginClick(mail, password, rememberMe)
+                                    onLoginClick(identifier, password,rememberMe)
                                 }
                             },
                             modifier = Modifier
@@ -338,6 +342,6 @@ class LoginScreen(val navController: NavController) {
     }
 
     private fun isValidEmail(email: String): Boolean {
-        return email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        return email.isNotEmpty()
     }
 }
