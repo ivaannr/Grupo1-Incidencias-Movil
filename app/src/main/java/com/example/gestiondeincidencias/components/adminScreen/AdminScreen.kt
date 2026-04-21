@@ -97,75 +97,10 @@ class AdminScreen(
                 }
 
                 when (selectedTab) {
-                    0 -> ListaUsuarios(usuarios)
+                    0 -> ListaUsuarios(usuarios, usuarioViewModel, navController)
                     1 -> ListaIncidencias(incidencias, incidenciaViewModel, navController)
                 }
             }
         }
     }
-
-    @Composable
-    private fun ListaUsuarios(usuarios: List<Usuario>) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(usuarios) { usuario ->
-                UsuarioItem(usuario)
-            }
-        }
-    }
-
-    @Composable
-    private fun UsuarioItem(usuario: Usuario) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Person, contentDescription = null, tint = Color(0xFF1565C0))
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(text = usuario.nombre, fontWeight = FontWeight.Bold)
-                        Text(text = usuario.email, fontSize = 12.sp, color = Color.Gray)
-                        Text(
-                            text = usuario.rol.displayName,
-                            fontSize = 11.sp,
-                            color = if (usuario.rol == Rol.ADMINISTRADOR) Color.Red else Color.Blue
-                        )
-                    }
-                }
-                Row {
-                    IconButton(onClick = { navController.navigate("edit-usuario/${usuario.id}") }) {
-                        Icon(
-                            Icons.Default.Edit,
-                            contentDescription = "Editar",
-                            tint = Color.Gray
-                        )
-                    }
-                    IconButton(onClick = { usuarioViewModel.delete(usuario) }) {
-                        Icon(
-                            Icons.Default.Delete,
-                            contentDescription = "Borrar",
-                            tint = Color.Red
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-
-
-
 }
