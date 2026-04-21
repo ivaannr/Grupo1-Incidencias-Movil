@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,10 +30,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.gestiondeincidencias.db.model.Usuario
+import com.example.gestiondeincidencias.ui.theme.Colors
 
 class RegisterScreen(val navController: NavController) {
 
@@ -89,7 +91,7 @@ class RegisterScreen(val navController: NavController) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp),
+                        .height(350.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     IconButton(
@@ -107,7 +109,29 @@ class RegisterScreen(val navController: NavController) {
                         )
                     }
 
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Surface(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(CircleShape),
+                            color = Colors.WhiteAlpha20,
+                            tonalElevation = 4.dp
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(48.dp),
+                                    tint = Color.White
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
                         Text(
                             text = "Crear Cuenta",
                             color = Color.White,
@@ -134,14 +158,28 @@ class RegisterScreen(val navController: NavController) {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 32.dp, vertical = 40.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        OutlinedTextField(
+
+                        Text(
+                            text = "Bienvenido",
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Colors.TextDark
+                        )
+                        Text(
+                            text = "Crea una cuenta para continuar",
+                            color = Colors.TextGray,
+                            fontSize = 15.sp,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
+                        )
+
+                        TextField(
                             value = nombre,
                             onValueChange = { nombre = it; nombreError = false },
                             label = { Text("Nombre Completo") },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
                             leadingIcon = {
                                 Icon(
                                     Icons.Default.Person,
@@ -151,8 +189,13 @@ class RegisterScreen(val navController: NavController) {
                             },
                             isError = nombreError,
                             singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = primaryColor,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                errorContainerColor = Color.Transparent,
+                                focusedIndicatorColor = primaryColor,
+                                unfocusedIndicatorColor = Colors.TextGray,
                                 focusedLabelColor = primaryColor
                             )
                         )
@@ -168,12 +211,11 @@ class RegisterScreen(val navController: NavController) {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        OutlinedTextField(
+                        TextField(
                             value = email,
                             onValueChange = { email = it; emailError = false },
                             label = { Text("Correo Electrónico") },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                             leadingIcon = {
                                 Icon(
@@ -184,8 +226,13 @@ class RegisterScreen(val navController: NavController) {
                             },
                             isError = emailError,
                             singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = primaryColor,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                errorContainerColor = Color.Transparent,
+                                focusedIndicatorColor = primaryColor,
+                                unfocusedIndicatorColor = Colors.TextGray,
                                 focusedLabelColor = primaryColor
                             )
                         )
@@ -201,12 +248,11 @@ class RegisterScreen(val navController: NavController) {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        OutlinedTextField(
+                        TextField(
                             value = password,
                             onValueChange = { password = it; passwordError = false },
                             label = { Text("Contraseña") },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
                             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                             leadingIcon = {
@@ -226,8 +272,13 @@ class RegisterScreen(val navController: NavController) {
                             },
                             isError = passwordError,
                             singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = primaryColor,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                errorContainerColor = Color.Transparent,
+                                focusedIndicatorColor = primaryColor,
+                                unfocusedIndicatorColor = Colors.TextGray,
                                 focusedLabelColor = primaryColor
                             )
                         )
@@ -243,12 +294,11 @@ class RegisterScreen(val navController: NavController) {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        OutlinedTextField(
+                        TextField(
                             value = confirmPassword,
                             onValueChange = { confirmPassword = it; confirmPasswordError = false },
                             label = { Text("Confirmar Contraseña") },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
                             visualTransformation = PasswordVisualTransformation(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                             leadingIcon = {
@@ -260,8 +310,13 @@ class RegisterScreen(val navController: NavController) {
                             },
                             isError = confirmPasswordError,
                             singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = primaryColor,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                errorContainerColor = Color.Transparent,
+                                focusedIndicatorColor = primaryColor,
+                                unfocusedIndicatorColor = Colors.TextGray,
                                 focusedLabelColor = primaryColor
                             )
                         )

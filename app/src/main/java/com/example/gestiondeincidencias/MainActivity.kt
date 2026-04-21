@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable("login") {
-                LoginScreen(navController).Render(
+                LoginScreen(navController, incidenciasViewModel.incidencias.collectAsState().value).Render(
                     onLoginClick = { identifier, password, remember ->
                          scope.launch {
                             try {

@@ -1,7 +1,6 @@
 package com.example.gestiondeincidencias.components.loginScreen
 
 import android.annotation.SuppressLint
-import android.util.Patterns
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,11 +32,11 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,9 +56,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.gestiondeincidencias.components.general.StatBox
+import com.example.gestiondeincidencias.components.homeScreen.StatRow
+import com.example.gestiondeincidencias.db.model.Incidencia
 import com.example.gestiondeincidencias.ui.theme.Colors
+import kotlin.math.ceil
+import kotlin.math.round
 
-class LoginScreen(val navController: NavController) {
+class LoginScreen(val navController: NavController, val incidencias: List<Incidencia> = emptyList()) {
 
     @SuppressLint("CommitPrefEdits")
     @Composable
@@ -78,6 +82,10 @@ class LoginScreen(val navController: NavController) {
         val backgroundGradient = Brush.verticalGradient(
             colors = listOf(Colors.Primary, Colors.Secondary)
         )
+
+        val incidenciasAbiertas = incidencias.filter { it.estado == "Abierta" }
+        val incidenciasEnCurso = incidencias.filter { it.estado == "En curso" }
+        val incidenciasResueltas = incidencias.filter { it.estado == "Resuelta" }
 
         Box(
             modifier = Modifier
@@ -105,7 +113,7 @@ class LoginScreen(val navController: NavController) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(280.dp),
+                        .height(350.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -158,7 +166,9 @@ class LoginScreen(val navController: NavController) {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 32.dp, vertical = 40.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+
                     ) {
                         Text(
                             text = "Bienvenido",
@@ -173,7 +183,7 @@ class LoginScreen(val navController: NavController) {
                             modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
                         )
 
-                        OutlinedTextField(
+                        TextField(
                             value = identifier,
                             onValueChange = {
                                 identifier = it
@@ -181,7 +191,6 @@ class LoginScreen(val navController: NavController) {
                             },
                             label = { Text("Correo / Usuario") },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                             leadingIcon = {
                                 Icon(
@@ -192,8 +201,13 @@ class LoginScreen(val navController: NavController) {
                             },
                             isError = mailError,
                             singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Colors.Primary,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                errorContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Colors.Primary,
+                                unfocusedIndicatorColor = Colors.TextGray,
                                 focusedLabelColor = Colors.Primary
                             )
                         )
@@ -209,7 +223,7 @@ class LoginScreen(val navController: NavController) {
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        OutlinedTextField(
+                        TextField(
                             value = password,
                             onValueChange = {
                                 password = it
@@ -217,7 +231,6 @@ class LoginScreen(val navController: NavController) {
                             },
                             label = { Text("Contraseña") },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
                             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                             leadingIcon = {
@@ -238,8 +251,13 @@ class LoginScreen(val navController: NavController) {
                             },
                             isError = passwordError,
                             singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Colors.Primary,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                                errorContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Colors.Primary,
+                                unfocusedIndicatorColor = Colors.TextGray,
                                 focusedLabelColor = Colors.Primary
                             )
                         )
@@ -314,7 +332,36 @@ class LoginScreen(val navController: NavController) {
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(48.dp))
+                        Spacer(modifier = Modifier.height(30.dp))
+
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+                            val mockAbiertas = (Math.random() * 100).toInt()
+
+                            StatBox(
+                                "Abiertas",
+                                //incidenciasAbiertas.size.toString(),
+                                "77",
+                                Color(0xFFA32D2D),
+                                Modifier.weight(1f)
+                            )
+                            StatBox(
+                                "En curso",
+                                //incidenciasEnCurso.size.toString(),
+                                "38",
+                                Color(0xFF854F0B),
+                                Modifier.weight(1f)
+                            )
+                            StatBox(
+                                "Resueltas",
+                                //incidenciasResueltas.size.toString(),
+                                "10",
+                                Color(0xFF3B6D11),
+                                Modifier.weight(1f)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(30.dp))
 
                         Row(
                             horizontalArrangement = Arrangement.Center,
